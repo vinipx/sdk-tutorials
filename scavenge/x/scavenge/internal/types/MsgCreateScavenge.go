@@ -3,7 +3,6 @@ package types
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/modules/incubator/nft"
 )
 
 // MsgCreateScavenge
@@ -21,13 +20,14 @@ type MsgCreateScavenge struct {
 }
 
 // NewMsgCreateScavenge creates a new MsgCreateScavenge instance
-func NewMsgCreateScavenge(creator sdk.AccAddress, description, solutionHash string, coinReward sdk.Coins, nftReward nft.NFT) MsgCreateScavenge {
+func NewMsgCreateScavenge(creator sdk.AccAddress, description, solutionHash string, coinReward sdk.Coins, nftRewardDenom, nftRewardID string) MsgCreateScavenge {
 	return MsgCreateScavenge{
-		Creator:      creator,
-		Description:  description,
-		SolutionHash: solutionHash,
-		CoinReward:   coinReward,
-		NFTReward:    nftReward,
+		Creator:        creator,
+		Description:    description,
+		SolutionHash:   solutionHash,
+		CoinReward:     coinReward,
+		NFTRewardDenom: nftRewardDenom,
+		NFTRewardID:    nftRewardID,
 	}
 }
 
@@ -56,7 +56,7 @@ func (msg MsgCreateScavenge) ValidateBasic() error {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "solutionScavengerHash can't be empty")
 	}
 	if (!msg.CoinReward.IsValid() || !msg.CoinReward.IsZero()) && (msg.NFTRewardDenom == "" || msg.NFTRewardID == "") {
-			return sdkerrors.Wrap;(sdkerrors.ErrInvalidRequest, "Must include v`alid NFT Reward or Coin Reward")
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Must include a valid NFT Reward or a Coin Reward")
 	}
 	return nil
 }

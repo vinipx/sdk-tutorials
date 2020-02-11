@@ -46,7 +46,7 @@ func handleMsgCreateScavenge(ctx sdk.Context, k Keeper, msg MsgCreateScavenge) (
 	}
 	moduleAcct := sdk.AccAddress(crypto.AddressHash([]byte(types.ModuleName)))
 	var sdkError error
-	if scavenge.CoinReward.IsValid() && !scavengeCoinReward.IsZero() {
+	if scavenge.CoinReward.IsValid() && !scavenge.CoinReward.IsZero() {
 		sdkError = k.CoinKeeper.SendCoins(ctx, scavenge.Creator, moduleAcct, scavenge.CoinReward)
 
 	} else {
@@ -67,7 +67,9 @@ func handleMsgCreateScavenge(ctx sdk.Context, k Keeper, msg MsgCreateScavenge) (
 			sdk.NewAttribute(sdk.AttributeKeySender, msg.Creator.String()),
 			sdk.NewAttribute(types.AttributeDescription, msg.Description),
 			sdk.NewAttribute(types.AttributeSolutionHash, msg.SolutionHash),
-			sdk.NewAttribute(types.AttributeReward, msg.Reward.String()),
+			sdk.NewAttribute(types.AttributeCoinReward, msg.CoinReward.String()),
+			sdk.NewAttribute(types.AttributeNFTRewardDenom, msg.NFTRewardDenom),
+			sdk.NewAttribute(types.AttributeNFTRewardID, msg.NFTRewardID),
 		),
 	)
 	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
@@ -120,10 +122,9 @@ func handleMsgRevealSolution(ctx sdk.Context, k Keeper, msg MsgRevealSolution) (
 	scavenge.Solution = msg.Solution
 
 	moduleAcct := sdk.AccAddress(crypto.AddressHash([]byte(types.ModuleName)))
-
-	if scavenge.CoinReward.IsValid() && !scavengeCoinReward.IsZero() {
+	var sdkError error
+	if scavenge.CoinReward.IsValid() && !scavenge.CoinReward.IsZero() {
 		sdkError = k.CoinKeeper.SendCoins(ctx, moduleAcct, scavenge.Scavenger, scavenge.CoinReward)
-
 	} else {
 		msg := nft.NewMsgTransferNFT(moduleAcct, scavenge.Scavenger, scavenge.NFTRewardDenom, scavenge.NFTRewardID)
 		// TODO: what to do with other events returned here?
@@ -144,7 +145,9 @@ func handleMsgRevealSolution(ctx sdk.Context, k Keeper, msg MsgRevealSolution) (
 			sdk.NewAttribute(types.AttributeDescription, scavenge.Description),
 			sdk.NewAttribute(types.AttributeSolution, msg.Solution),
 			sdk.NewAttribute(types.AttributeScavenger, scavenge.Scavenger.String()),
-			sdk.NewAttribute(types.AttributeReward, scavenge.Reward.String()),
+			sdk.NewAttribute(types.AttributeCoinReward, scavenge.CoinReward.String()),
+			sdk.NewAttribute(types.AttributeNFTRewardDenom, scavenge.NFTRewardDenom),
+			sdk.NewAttribute(types.AttributeNFTRewardID, scavenge.NFTRewardID),
 		),
 	)
 	return &sdk.Result{Events: ctx.EventManager().Events()}, nil

@@ -13,6 +13,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/bank"
+	"github.com/cosmos/modules/incubator/nft"
 	"github.com/cosmos/sdk-tutorials/scavenge/x/scavenge/client/cli"
 	"github.com/cosmos/sdk-tutorials/scavenge/x/scavenge/client/rest"
 	"github.com/cosmos/sdk-tutorials/scavenge/x/scavenge/internal/types"
@@ -75,14 +76,16 @@ func (AppModuleBasic) GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 type AppModule struct {
 	AppModuleBasic
 	keeper     Keeper
+	nftKeeper  nft.Keeper
 	coinKeeper bank.Keeper
 }
 
 // NewAppModule creates a new AppModule object
-func NewAppModule(k Keeper, bankKeeper bank.Keeper) AppModule {
+func NewAppModule(k Keeper, nftKeeper nft.Keeper, bankKeeper bank.Keeper) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{},
 		keeper:         k,
+		nftKeeper:      nftKeeper,
 		coinKeeper:     bankKeeper,
 	}
 }

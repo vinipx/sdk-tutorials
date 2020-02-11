@@ -9,7 +9,9 @@ const (
 	AttributeDescription           = "description"
 	AttributeSolution              = "solution"
 	AttributeSolutionHash          = "solutionHash"
-	AttributeReward                = "reward"
+	AttributeCoinReward            = "coinReward"
+	AttributeNFTRewardDenom        = "nftRewardDenom"
+	AttributeNFTRewardID           = "nftRewardID"
 	AttributeScavenger             = "scavenger"
 	AttributeSolutionScavengerHash = "solutionScavengerHash"
 

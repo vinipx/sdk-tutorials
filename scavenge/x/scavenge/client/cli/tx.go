@@ -29,7 +29,8 @@ func GetTxCmd(cdc *codec.Codec) *cobra.Command {
 	}
 
 	scavengeTxCmd.AddCommand(flags.PostCommands(
-		GetCmdCreateScavenge(cdc),
+		GetCmdCreateNFTScavenge(cdc),
+		GetCmdCreateCoinScavenge(cdc),
 		GetCmdCommitSolution(cdc),
 		GetCmdRevealSolution(cdc),
 	)...)
@@ -37,10 +38,39 @@ func GetTxCmd(cdc *codec.Codec) *cobra.Command {
 	return scavengeTxCmd
 }
 
-func GetCmdCreateScavenge(cdc *codec.Codec) *cobra.Command {
+func GetCmdCreateNFTScavenge(cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "createScavenge [denom] [id] [solution] [description]",
+		Short: "Creates a new scavenge with an NFT reward",
+		Args:  cobra.ExactArgs(4), // Does your request require arguments
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			inBuf := bufio.NewReader(cmd.InOrStdin())
+			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
+
+			denom := args[0]
+			id := args[1]
+
+			var solution = args[2]
+			var solutionHash = sha256.Sum256([]byte(solution))
+			var solutionHashString = hex.EncodeToString(solutionHash[:])
+
+			msg := types.NewMsgCreateScavenge(cliCtx.GetFromAddress(), args[3], solutionHashString, nil, denom, id)
+			err := msg.ValidateBasic()
+			if err != nil {
+				return err
+			}
+
+			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
+		},
+	}
+}
+
+func GetCmdCreateCoinScavenge(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "createScavenge [reward] [solution] [description]",
-		Short: "Creates a new scavenge with a reward",
+		Short: "Creates a new scavenge with a Coin reward",
 		Args:  cobra.ExactArgs(3), // Does your request require arguments
 		RunE: func(cmd *cobra.Command, args []string) error {
 
@@ -57,7 +87,7 @@ func GetCmdCreateScavenge(cdc *codec.Codec) *cobra.Command {
 			var solutionHash = sha256.Sum256([]byte(solution))
 			var solutionHashString = hex.EncodeToString(solutionHash[:])
 
-			msg := types.NewMsgCreateScavenge(cliCtx.GetFromAddress(), args[2], solutionHashString, reward)
+			msg := types.NewMsgCreateScavenge(cliCtx.GetFromAddress(), args[2], solutionHashString, reward, "", "")
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err

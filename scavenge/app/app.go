@@ -25,6 +25,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/supply"
+	"github.com/cosmos/modules/incubator/nft"
 	"github.com/cosmos/sdk-tutorials/scavenge/x/scavenge"
 )
 
@@ -90,6 +91,7 @@ type newApp struct {
 	distrKeeper    distr.Keeper
 	supplyKeeper   supply.Keeper
 	paramsKeeper   params.Keeper
+	nftKeeper      nft.Keeper
 	scavengeKeeper scavenge.Keeper
 
 	// Module Manager
@@ -145,6 +147,11 @@ func NewInitApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest b
 		auth.ProtoBaseAccount,
 	)
 
+	app.nftKeeper = nft.NewKeeper(
+		app.cdc,
+		keys[nft.StoreKey],
+	)
+
 	// The BankKeeper allows you perform sdk.Coins interactions
 	app.bankKeeper = bank.NewBaseKeeper(
 		app.accountKeeper,
@@ -195,19 +202,24 @@ func NewInitApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest b
 	)
 
 	app.scavengeKeeper = scavenge.NewKeeper(
+		app.nftKeeper,
 		app.bankKeeper,
 		app.cdc,
 		keys[scavenge.StoreKey],
 	)
 
+	nftModule := nft.NewAppModule(app.nftKeeper, app.accountKeeper)
+	overriddenNFTModule := NewOverrideNFTModule(nftModule, app.nftKeeper)
+
 	app.mm = module.NewManager(
 		genutil.NewAppModule(app.accountKeeper, app.stakingKeeper, app.BaseApp.DeliverTx),
 		auth.NewAppModule(app.accountKeeper),
 		bank.NewAppModule(app.bankKeeper, app.accountKeeper),
-		scavenge.NewAppModule(app.scavengeKeeper, app.bankKeeper),
+		scavenge.NewAppModule(app.scavengeKeeper, app.nftKeeper, app.bankKeeper),
 		supply.NewAppModule(app.supplyKeeper, app.accountKeeper),
 		distr.NewAppModule(app.distrKeeper, app.accountKeeper, app.supplyKeeper, app.stakingKeeper),
 		slashing.NewAppModule(app.slashingKeeper, app.accountKeeper, app.stakingKeeper),
+		overriddenNFTModule,
 		staking.NewAppModule(app.stakingKeeper, app.accountKeeper, app.supplyKeeper),
 	)
 
@@ -223,6 +235,7 @@ func NewInitApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest b
 		auth.ModuleName,
 		bank.ModuleName,
 		slashing.ModuleName,
+		nft.ModuleName,
 		scavenge.ModuleName,
 		supply.ModuleName,
 		genutil.ModuleName,
