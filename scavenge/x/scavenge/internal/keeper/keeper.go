@@ -8,19 +8,22 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
-	"github.com/okwme/scavenge/x/scavenge/internal/types"
+	"github.com/cosmos/modules/incubator/nft"
+	"github.com/cosmos/sdk-tutorials/scavenge/x/scavenge/internal/types"
 )
 
 // Keeper of the scavenge store
 type Keeper struct {
+	NFTKeeper  nft.Keeper
 	CoinKeeper bank.Keeper
 	storeKey   sdk.StoreKey
 	cdc        *codec.Codec
 }
 
 // NewKeeper creates a scavenge keeper
-func NewKeeper(coinKeeper bank.Keeper, cdc *codec.Codec, key sdk.StoreKey) Keeper {
+func NewKeeper(nftKeeper nft.Keeper, coinKeeper bank.Keeper, cdc *codec.Codec, key sdk.StoreKey) Keeper {
 	keeper := Keeper{
+		NFTKeeper:  nftKeeper,
 		CoinKeeper: coinKeeper,
 		storeKey:   key,
 		cdc:        cdc,

@@ -9,12 +9,14 @@ import (
 
 // Scavenge is the Scavenge struct
 type Scavenge struct {
-	Creator      sdk.AccAddress `json:"creator" yaml:"creator"`           // address of the scavenger creator
-	Description  string         `json:"description" yaml:"description"`   // description of the scavenge
-	SolutionHash string         `json:"solutionHash" yaml:"solutionHash"` // solution hash of the scavenge
-	Reward       sdk.Coins      `json:"reward" yaml:"reward"`             // reward of the scavenger
-	Solution     string         `json:"solution" yaml:"solution"`         // the solution to the scagenve
-	Scavenger    sdk.AccAddress `json:"scavenger" yaml:"scavenger"`       // the scavenger who found the solution
+	Creator        sdk.AccAddress `json:"creator" yaml:"creator"`               // address of the scavenger creator
+	Description    string         `json:"description" yaml:"description"`       // description of the scavenge
+	SolutionHash   string         `json:"solutionHash" yaml:"solutionHash"`     // solution hash of the scavenge
+	CoinReward     sdk.Coins      `json:"coinReward" yaml:"coinReward"`         // coin reward of the scavenger
+	NFTRewardDenom string         `json:"nftRewardDenom" yaml:"nftRewardDenom"` // nft reward of the scavenger
+	NFTRewardID    string         `json:"nftRewardID" yaml:"nftRewardID"`       // nft reward of the scavenger
+	Solution       string         `json:"solution" yaml:"solution"`             // the solution to the scagenve
+	Scavenger      sdk.AccAddress `json:"scavenger" yaml:"scavenger"`           // the scavenger who found the solution
 }
 
 // implement fmt.Stringer
@@ -22,13 +24,17 @@ func (s Scavenge) String() string {
 	return strings.TrimSpace(fmt.Sprintf(`Creator: %s
 	Description: %s
 	SolutionHash: %s
-	Reward: %s
+	CoinReward: %s
+	NFTRewardDenom: %s
+	NFTRewardID: %s
 	Solution: %s
 	Scavenger: %s`,
 		s.Creator,
 		s.Description,
 		s.SolutionHash,
-		s.Reward,
+		s.CoinReward,
+		s.NFTRewardDenom,
+		s.NFTRewardID,
 		s.Solution,
 		s.Scavenger,
 	))

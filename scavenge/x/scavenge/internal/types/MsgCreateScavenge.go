@@ -3,6 +3,7 @@ package types
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/modules/incubator/nft"
 )
 
 // MsgCreateScavenge
@@ -11,19 +12,22 @@ var _ sdk.Msg = &MsgCreateScavenge{}
 
 // MsgCreateScavenge - struct for unjailing jailed validator
 type MsgCreateScavenge struct {
-	Creator      sdk.AccAddress `json:"creator" yaml:"creator"`           // address of the scavenger creator
-	Description  string         `json:"description" yaml:"description"`   // description of the scavenge
-	SolutionHash string         `json:"solutionHash" yaml:"solutionHash"` // solution hash of the scavenge
-	Reward       sdk.Coins      `json:"reward" yaml:"reward"`             // reward of the scavenger
+	Creator        sdk.AccAddress `json:"creator" yaml:"creator"`               // address of the scavenger creator
+	Description    string         `json:"description" yaml:"description"`       // description of the scavenge
+	SolutionHash   string         `json:"solutionHash" yaml:"solutionHash"`     // solution hash of the scavenge
+	CoinReward     sdk.Coins      `json:"rewardCoins" yaml:"rewardCoins"`       // coin reward of the scavenger
+	NFTRewardDenom string         `json:"NFTRewardDenom" yaml:"NFTRewardDenom"` // NFT reward of the scavenger
+	NFTRewardID    string         `json:"NFTRewardID" yaml:"NFTRewardID"`       // NFT reward of the scavenger
 }
 
 // NewMsgCreateScavenge creates a new MsgCreateScavenge instance
-func NewMsgCreateScavenge(creator sdk.AccAddress, description, solutionHash string, reward sdk.Coins) MsgCreateScavenge {
+func NewMsgCreateScavenge(creator sdk.AccAddress, description, solutionHash string, coinReward sdk.Coins, nftReward nft.NFT) MsgCreateScavenge {
 	return MsgCreateScavenge{
 		Creator:      creator,
 		Description:  description,
 		SolutionHash: solutionHash,
-		Reward:       reward,
+		CoinReward:   coinReward,
+		NFTReward:    nftReward,
 	}
 }
 
@@ -50,6 +54,9 @@ func (msg MsgCreateScavenge) ValidateBasic() error {
 	}
 	if msg.SolutionHash == "" {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "solutionScavengerHash can't be empty")
+	}
+	if (!msg.CoinReward.IsValid() || !msg.CoinReward.IsZero()) && (msg.NFTRewardDenom == "" || msg.NFTRewardID == "") {
+			return sdkerrors.Wrap;(sdkerrors.ErrInvalidRequest, "Must include v`alid NFT Reward or Coin Reward")
 	}
 	return nil
 }

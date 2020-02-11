@@ -7,7 +7,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/okwme/scavenge/x/scavenge/internal/types"
+	"github.com/cosmos/modules/incubator/nft"
+	"github.com/cosmos/sdk-tutorials/scavenge/x/scavenge/internal/types"
 	"github.com/tendermint/tendermint/crypto"
 )
 
@@ -32,20 +33,31 @@ func NewHandler(k Keeper) sdk.Handler {
 // handleMsgCreateScavenge creates a new scavenge and moves the reward into escrow
 func handleMsgCreateScavenge(ctx sdk.Context, k Keeper, msg MsgCreateScavenge) (*sdk.Result, error) {
 	var scavenge = types.Scavenge{
-		Creator:      msg.Creator,
-		Description:  msg.Description,
-		SolutionHash: msg.SolutionHash,
-		Reward:       msg.Reward,
+		Creator:        msg.Creator,
+		Description:    msg.Description,
+		SolutionHash:   msg.SolutionHash,
+		CoinReward:     msg.CoinReward,
+		NFTRewardDenom: msg.NFTRewardDenom,
+		NFTRewardID:    msg.NFTRewardID,
 	}
 	_, err := k.GetScavenge(ctx, scavenge.SolutionHash)
 	if err == nil {
 		return nil, sdkerrors.Wrap(err, "Scavenge with that solution hash already exists")
 	}
 	moduleAcct := sdk.AccAddress(crypto.AddressHash([]byte(types.ModuleName)))
-	sdkError := k.CoinKeeper.SendCoins(ctx, scavenge.Creator, moduleAcct, scavenge.Reward)
+	var sdkError error
+	if scavenge.CoinReward.IsValid() && !scavengeCoinReward.IsZero() {
+		sdkError = k.CoinKeeper.SendCoins(ctx, scavenge.Creator, moduleAcct, scavenge.CoinReward)
+
+	} else {
+		msg := nft.NewMsgTransferNFT(msg.Creator, moduleAcct, scavenge.NFTRewardDenom, scavenge.NFTRewardID)
+		// TODO: what to do with other events returned here?
+		_, sdkError = nft.HandleMsgTransferNFT(ctx, msg, k.NFTKeeper)
+	}
 	if sdkError != nil {
 		return nil, sdkError
 	}
+
 	k.SetScavenge(ctx, scavenge)
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
@@ -108,7 +120,16 @@ func handleMsgRevealSolution(ctx sdk.Context, k Keeper, msg MsgRevealSolution) (
 	scavenge.Solution = msg.Solution
 
 	moduleAcct := sdk.AccAddress(crypto.AddressHash([]byte(types.ModuleName)))
-	sdkError := k.CoinKeeper.SendCoins(ctx, moduleAcct, scavenge.Scavenger, scavenge.Reward)
+
+	if scavenge.CoinReward.IsValid() && !scavengeCoinReward.IsZero() {
+		sdkError = k.CoinKeeper.SendCoins(ctx, moduleAcct, scavenge.Scavenger, scavenge.CoinReward)
+
+	} else {
+		msg := nft.NewMsgTransferNFT(moduleAcct, scavenge.Scavenger, scavenge.NFTRewardDenom, scavenge.NFTRewardID)
+		// TODO: what to do with other events returned here?
+		_, sdkError = nft.HandleMsgTransferNFT(ctx, msg, k.NFTKeeper)
+	}
+
 	if sdkError != nil {
 		return nil, sdkError
 	}
