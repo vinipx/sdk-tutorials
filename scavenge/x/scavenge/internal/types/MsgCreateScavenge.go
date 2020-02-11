@@ -21,13 +21,14 @@ type MsgCreateScavenge struct {
 }
 
 // NewMsgCreateScavenge creates a new MsgCreateScavenge instance
-func NewMsgCreateScavenge(creator sdk.AccAddress, description, solutionHash string, coinReward sdk.Coins, nftReward nft.NFT) MsgCreateScavenge {
+func NewMsgCreateScavenge(creator sdk.AccAddress, description, solutionHash string, coinReward sdk.Coins, nftReward nft.NFT /*not sure what type you want here*/) MsgCreateScavenge {
 	return MsgCreateScavenge{
-		Creator:      creator,
-		Description:  description,
-		SolutionHash: solutionHash,
-		CoinReward:   coinReward,
-		NFTReward:    nftReward,
+		Creator:        creator,
+		Description:    description,
+		SolutionHash:   solutionHash,
+		CoinReward:     coinReward,
+		NFTRewardDenom: nft.Denom,
+		NFTRewardID:    nft.Id,
 	}
 }
 
@@ -56,7 +57,7 @@ func (msg MsgCreateScavenge) ValidateBasic() error {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "solutionScavengerHash can't be empty")
 	}
 	if (!msg.CoinReward.IsValid() || !msg.CoinReward.IsZero()) && (msg.NFTRewardDenom == "" || msg.NFTRewardID == "") {
-			return sdkerrors.Wrap;(sdkerrors.ErrInvalidRequest, "Must include v`alid NFT Reward or Coin Reward")
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Must include v`alid NFT Reward or Coin Reward")
 	}
 	return nil
 }
