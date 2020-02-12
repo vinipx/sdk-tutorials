@@ -5,7 +5,8 @@ go 1.13
 require (
 	github.com/btcsuite/btcd v0.0.0-20190523000118-16327141da8c // indirect
 	github.com/cosmos/cosmos-sdk v0.38.0
-	github.com/cosmos/modules/incubator/nft v0.0.0-20200117100147-88228b5fa693
+	github.com/cosmos/modules/incubator/nft v0.0.0-20200205154032-a00840ed53b1
+	// github.com/cosmos/modules/incubator/nft v0.0.0-20200205154032-a00840ed53b1
 	github.com/golang/mock v1.3.1 // indirect
 	github.com/gorilla/mux v1.7.3
 	github.com/onsi/ginkgo v1.8.0 // indirect
@@ -22,4 +23,4 @@ require (
 	golang.org/x/text v0.3.2 // indirect
 )
 
-replace github.com/cosmos/modules/incubator/nft v0.0.0-20200117100147-88228b5fa693 => /home/billy/GitHub.com/cosmos/modules/incubator/nft
+// replace github.com/cosmos/modules/incubator/nft v0.0.0-20200117100147-88228b5fa693 => /home/billy/GitHub.com/cosmos/modules/incubator/nft
