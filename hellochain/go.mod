@@ -1,4 +1,4 @@
-module github.com/hschoenburg/hellochain
+module github.com/cosmos/hellochain
 
 go 1.13
 

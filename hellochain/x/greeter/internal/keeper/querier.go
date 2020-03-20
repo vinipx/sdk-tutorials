@@ -9,7 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/hschoenburg/hellochain/x/greeter/internal/types"
+	"github.com/cosmos/hellochain/x/greeter/internal/types"
 )
 
 // NewQuerier creates a new querier for greeter clients.

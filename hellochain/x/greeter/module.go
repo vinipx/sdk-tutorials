@@ -12,8 +12,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/hschoenburg/hellochain/x/greeter/client/cli"
-	"github.com/hschoenburg/hellochain/x/greeter/client/rest"
+	"github.com/cosmos/hellochain/x/greeter/client/cli"
+	"github.com/cosmos/hellochain/x/greeter/client/rest"
 )
 
 var (

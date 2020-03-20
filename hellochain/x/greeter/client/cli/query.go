@@ -12,7 +12,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/hschoenburg/hellochain/x/greeter/internal/types"
+	"github.com/cosmos/hellochain/x/greeter/internal/types"
 )
 
 // GetQueryCmd returns the cli query commands for this module
