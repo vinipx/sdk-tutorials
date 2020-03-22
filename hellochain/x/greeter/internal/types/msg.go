@@ -3,44 +3,52 @@ package types
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-)
 
-// TODO: Describe your actions, these will implment the interface of `sdk.Msg`
-/*
+
 verify interface at compile time
-var _ sdk.Msg = &Msg<Action>{}
-
-Msg<Action> - struct for unjailing jailed validator
-type Msg<Action> struct {
-	ValidatorAddr sdk.ValAddress `json:"address" yaml:"address"` // address of the validator operator
+var _ sdk.Msg = &MsgGreet{}
+	type MsgGreet struct {
+	Body      string         // content of the greeting
+	Sender    sdk.AccAddress // account signing and sending the greeting
+	Recipient sdk.AccAddress // account designated as recipient of the greeeting (not a signer)
 }
-
-NewMsg<Action> creates a new Msg<Action> instance
-func NewMsg<Action>(validatorAddr sdk.ValAddress) Msg<Action> {
-	return Msg<Action>{
-		ValidatorAddr: validatorAddr,
+)
+const RouterKey = "greeter"
+func NewMsgGreet(sender sdk.AccAddress, body string, recipient sdk.AccAddress) MsgGreet {
+	return MsgGreet{
+		Body:      body,
+		Sender:    sender,
+		Recipient: recipient,
 	}
 }
+func (msg MsgGreet) Route() string { return RouterKey }
 
-const <action>Const = "<action>"
+// Type should return the action
+func (msg MsgGreet) Type() string { return "greet" }
 
-// nolint
-func (msg Msg<Action>) Route() string { return RouterKey }
-func (msg Msg<Action>) Type() string  { return <action>Const }
-func (msg Msg<Action>) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{sdk.AccAddress(msg.ValidatorAddr)}
+func (msg MsgGreet) ValidateBasic() error {
+	if msg.Recipient.Empty() {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Recipient.String())
+	}
+	if len(msg.Sender) == 0 || len(msg.Body) == 0 || len(msg.Recipient) == 0 {
+
+		return sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, "Sender, Recipient and/or Body cannot be empty")
+	}
+	return nil
 }
 
-GetSignBytes gets the bytes for the message signer to sign on
-func (msg Msg<Action>) GetSignBytes() []byte {
-	bz := ModuleCdc.MustMarshalJSON(msg)
-	return sdk.MustSortJSON(bz)
+// GetSigners returns the addresses of those required to sign the message
+func (msg MsgGreet) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{msg.Sender}
 }
 
-ValidateBasic validity check for the AnteHandler
-func (msg Msg<Action>) ValidateBasic() error {
-	if msg.ValidatorAddr.Empty() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "missing validator address"
+// GetSignBytes encodes the message for signing
+func (msg MsgGreet) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
+
+
+
+
 	}
 	return nil
 }
