@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/sdk-tutorials/voter/voter/x/voter/types"
+	"github.com/cosmos/sdk-tutorials/voter/x/voter/types"
 )
 
 // GetTxCmd returns the transaction commands for this module
@@ -22,9 +22,7 @@ func GetTxCmd(cdc *codec.Codec) *cobra.Command {
 	}
 
 	voterTxCmd.AddCommand(flags.PostCommands(
-		// this line is used by starport scaffolding
-		GetCmdCreateVote(cdc),
-		GetCmdCreatePoll(cdc),
+    // this line is used by starport scaffolding # 1
 	)...)
 
 	return voterTxCmd

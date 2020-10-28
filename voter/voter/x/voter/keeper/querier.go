@@ -1,9 +1,7 @@
 package keeper
 
 import (
-	// this line is used by starport scaffolding
-	"github.com/cosmos/sdk-tutorials/voter/voter/x/voter/types"
-
+  // this line is used by starport scaffolding # 1
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -14,11 +12,7 @@ import (
 func NewQuerier(k Keeper) sdk.Querier {
 	return func(ctx sdk.Context, path []string, req abci.RequestQuery) ([]byte, error) {
 		switch path[0] {
-		// this line is used by starport scaffolding # 2
-		case types.QueryListVote:
-			return listVote(ctx, k)
-		case types.QueryListPoll:
-			return listPoll(ctx, k)
+    // this line is used by starport scaffolding # 2
 		default:
 			return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, "unknown voter query endpoint")
 		}
