@@ -22,7 +22,9 @@ func GetTxCmd(cdc *codec.Codec) *cobra.Command {
 	}
 
 	voterTxCmd.AddCommand(flags.PostCommands(
-    // this line is used by starport scaffolding # 1
+		// this line is used by starport scaffolding # 1
+		GetCmdCreatePoll(cdc),
+		GetCmdDeletePoll(cdc),
 	)...)
 
 	return voterTxCmd
