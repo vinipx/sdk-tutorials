@@ -17,7 +17,7 @@ func GetCmdCreatePoll(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "create-poll [title] [options]",
 		Short: "Creates a new poll",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			argsTitle := string(args[0])
 			argsOptions := args[1:len(args)]
